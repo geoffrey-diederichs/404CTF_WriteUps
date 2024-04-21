@@ -52,18 +52,7 @@ undefined4 secret_func_dont_look_here(long param_1)
 }
 ```
 
-La fonction main récupère notre entrée et l'envoie à `secret_func_dont_look_here` qui la compare à une variable `secret_data`. Retrouvons cette variable :
-
-```ghidra
-                             secret_data                                     XREF[3]:     Entry Point(*), 
-                                                                                          secret_func_dont_look_here:00101
-                                                                                          secret_func_dont_look_here:00101
-        00104040 08 20 10        addr       DAT_00102008                                     = 68h    h
-                 00 00 00 
-                 00 00
-```
-
-Nous obtenons un pointeur qui redirige vers :
+La fonction main récupère notre entrée et l'envoie à `secret_func_dont_look_here` qui la compare à une variable `secret_data`. En retrouvant cette variable dans la mémoire, nous trouvons un pointeur qui nous redirige ici :
 
 ```md
                              DAT_00102008                                    XREF[3]:     secret_func_dont_look_here:00101
