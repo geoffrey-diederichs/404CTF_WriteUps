@@ -146,3 +146,19 @@ En inversant l'opération mathématique effectué dans cette ligne `if ((char)(*
 En analysant le code, on comprend que ce jmp est réalisé lorsque la condition est validé. Nous avons le bon algorithme pour reverse le mot de passe. Automatisons le.
 
 ## Exploit
+
+En utilisant [ce script](./exploit.py) qui reprend la formule mathématique appliqué dans l'analyse dynamique, et l'applique sur la variable `secret_data` retrouvé dans l'analyse statique, on obtient :
+
+```python
+$ python3 exploit.py                                                 
+[+] Starting local process './echauffement.bin': pid 18899
+[*] Switching to interactive mode
+[*] Process './echauffement.bin' stopped with exit code 0 (pid 18899)
+Vous ne devinerez jamais le mot de passe secret ! Mais allez-y, essayez..
+Wow, impressionnant ! Vous avez réussi !
+[*] Got EOF while reading in interactive
+$ 
+Flag :  404CTF{l_ech4uff3m3nt_3st_t3rm1ne}\x11\x11\x12\x12\x13\x13
+```
+
+Le flag est donc : `404CTF{l_ech4uff3m3nt_3st_t3rm1ne}`.
