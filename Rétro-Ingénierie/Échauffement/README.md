@@ -120,4 +120,29 @@ Essayons d'inverser cette algorithme.
 
 ## Analyse dynamique
 
+En inversant l'opération mathématique effectué dans cette ligne `if ((char)(*(char *)(param_1 + local_c) * 2 - (char)local_c) != secret_data[local_c])`, essayons de calculer le premier charatère du mot de passe :
 
+```python
+>>> hex(int((0x68+0)/2))
+'0x34'
+```
+
+`0x68` étant le premier charactère de `secret_data`. Vérifions sur GDB que nous avons le bon charactère :
+
+```gdb
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────── code:x86:64 ────
+   0x5593398d11a9 <secret_func_dont_look_here+0054> add    rax, rdx
+   0x5593398d11ac <secret_func_dont_look_here+0057> movzx  eax, BYTE PTR [rax]
+   0x5593398d11af <secret_func_dont_look_here+005a> cmp    BYTE PTR [rbp-0xd], al
+ → 0x5593398d11b2 <secret_func_dont_look_here+005d> je     0x5593398d11bb <secret_func_dont_look_here+102>	TAKEN [Reason: Z]
+   ↳  0x5593398d11bb <secret_func_dont_look_here+0066> add    DWORD PTR [rbp-0x4], 0x1
+      0x5593398d11bf <secret_func_dont_look_here+006a> mov    eax, DWORD PTR [rbp-0x4]
+      0x5593398d11c2 <secret_func_dont_look_here+006d> cmp    eax, DWORD PTR [rbp-0xc]
+      0x5593398d11c5 <secret_func_dont_look_here+0070> jl     0x5593398d1183 <secret_func_dont_look_here+46>
+      0x5593398d11c7 <secret_func_dont_look_here+0072> mov    eax, DWORD PTR [rbp-0x8]
+      0x5593398d11ca <secret_func_dont_look_here+0075> leave  
+```
+
+En analysant le code, on comprend que ce jmp est réalisé lorsque la condition est validé. Nous avons le bon algorithme pour reverse le mot de passe. Automatisons le.
+
+## Exploit
