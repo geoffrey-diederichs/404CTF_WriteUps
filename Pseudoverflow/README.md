@@ -162,7 +162,7 @@ void win(char *param_1)
   system(param_1);
 ```
 
-Et la fonction main passe la variable `local_78` utilisé en tant que buffer est envoyé à la fonction `win` :
+Et la fonction main passe la variable `local_78` (utilisé en tant que buffer) à la fonction `win` :
 
 ```C
 win(local_78);
