@@ -125,7 +125,7 @@ Notre entrée est comparé à cette variable dans cette boucle :
   }
 ```
 
-Essayons d'inverser cette algorithme.
+Essayons d'inverser cet algorithme.
 
 ## Analyse dynamique
 
