@@ -12,6 +12,8 @@ Objectif: lire le fichier flag.txt
 Auteur: @Narcisse
 ```
 
+[Cet exécutable](./course) est fournit, ainsi que l'adresse et port sur lesquel le service à exploit tourne.
+
 # Analyse statique
 
 À l'aide de Ghidra on obtient ces deux fonctions :
