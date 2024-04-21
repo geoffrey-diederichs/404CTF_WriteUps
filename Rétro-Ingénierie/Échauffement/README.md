@@ -18,6 +18,8 @@ test
 C'est bien ce que je pensais, vous ne connaissez pas le mot de passe..
 ```
 
+Il demande une entrée avant de s'interrompre. Essayons de trouver le mot de passe.
+
 # Analyse statique
 
 Avec Ghidra nous trouvons les fonctions suivantes :
