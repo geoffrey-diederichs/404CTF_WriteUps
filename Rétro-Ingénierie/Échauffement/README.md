@@ -9,7 +9,14 @@ Un bon échauffement permet non seulement d'éviter des blessures, mais aussi de
 Auteur: @Izipak (_hdrien)
 ```
 
-[Ce fichier](./echauffement.bin) est fournit.
+[Ce fichier](./echauffement.bin) est fournit. Testons le :
+
+```console
+$ ./echauffement.bin 
+Vous ne devinerez jamais le mot de passe secret ! Mais allez-y, essayez..
+test
+C'est bien ce que je pensais, vous ne connaissez pas le mot de passe..
+```
 
 # Analyse statique
 
