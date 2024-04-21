@@ -158,7 +158,7 @@ En analysant le code, on comprend que ce jmp est réalisé lorsque la condition 
 
 En utilisant [ce script](./exploit.py) qui reprend la formule mathématique appliqué dans l'analyse dynamique, et l'applique sur la variable `secret_data` retrouvé dans l'analyse statique, on obtient :
 
-```python
+```console
 $ python3 exploit.py
 [+] Starting local process './echauffement.bin': pid 19161
 [*] Switching to interactive mode
