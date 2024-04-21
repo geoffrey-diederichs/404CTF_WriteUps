@@ -12,7 +12,7 @@ Objectif: lire le fichier flag.txt
 Auteur: @Narcisse
 ```
 
-[Cet exécutable](./course) est fournit, ainsi que l'adresse et port sur lesquel le service à exploit tourne.
+[Cet exécutable](./course) est fournit, ainsi que l'adresse et port sur lesquels le service à exploit tourne.
 
 # Analyse statique
 
