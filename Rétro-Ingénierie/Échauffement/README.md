@@ -159,15 +159,15 @@ En analysant le code, on comprend que ce jmp est réalisé lorsque la condition 
 En utilisant [ce script](./exploit.py) qui reprend la formule mathématique appliqué dans l'analyse dynamique, et l'applique sur la variable `secret_data` retrouvé dans l'analyse statique, on obtient :
 
 ```python
-$ python3 exploit.py                                                 
-[+] Starting local process './echauffement.bin': pid 18899
+$ python3 exploit.py
+[+] Starting local process './echauffement.bin': pid 19161
 [*] Switching to interactive mode
-[*] Process './echauffement.bin' stopped with exit code 0 (pid 18899)
+[*] Process './echauffement.bin' stopped with exit code 0 (pid 19161)
 Vous ne devinerez jamais le mot de passe secret ! Mais allez-y, essayez..
 Wow, impressionnant ! Vous avez réussi !
 [*] Got EOF while reading in interactive
 $ 
-Flag :  404CTF{l_ech4uff3m3nt_3st_t3rm1ne}\x11\x11\x12\x12\x13\x13
+Mot de passe :  404CTF{l_ech4uff3m3nt_3st_t3rm1ne}\x11\x11\x12\x12\x13\x13
 ```
 
 Le flag est donc : `404CTF{l_ech4uff3m3nt_3st_t3rm1ne}`.
