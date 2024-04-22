@@ -1,11 +1,10 @@
-
-
 ```console
-$ nc challenges.404ctf.fr 31999
+$ nc challenges.404ctf.fr 31998 > chall.zip && unzip chall.zip && chmod +x crackme.bin && gdb -q -x solver.py
+
 Token ? 
-6a27e37226acc585043c215deae2545e
+ > 7bdbab98c126b915d314e52aeb63b33b
 Alors, la solution ? 
-kVz3GEKHFltCedhY
+ > M2GW4OQsS0MiLsYm
 GG. Voila ton flag!
 404CTF{e9d749db81e9f8caf745a5547da13579}
 ```
