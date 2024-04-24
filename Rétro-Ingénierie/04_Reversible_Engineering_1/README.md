@@ -159,7 +159,7 @@ Si c'est bien le cas, elle va ensuite l'envoyer à la fonction `FUN_0010123f`. C
       iVar1 = memcmp(__s1,&local_28,16);
 ```
 
-Une nuance à bien comprendre dans ce code est quei dans cette ligne `iVar1 = memcmp(__s1,&local_28,16);`, `memcmp` va évaluer 16 bytes à partir du pointeur vers `local_28`. Or `local_28` et `local_20` font chacuns 8 bytes et sont écrit à la suite dans la stack, autrement dit le code compare bien notre entrée à ces deux variables.  
+Une nuance à bien comprendre dans ce code est que dans cette ligne `iVar1 = memcmp(__s1,&local_28,16);`, `memcmp` va évaluer 16 bytes à partir du pointeur vers `local_28`. Or `local_28` et `local_20` font chacuns 8 bytes et sont écrit à la suite dans la stack, autrement dit le code compare bien notre entrée à ces deux variables.  
   
 Le programme nous indique ensuite si notre entrée une fois encodé correspond bien à ces deux variables :
 
@@ -174,7 +174,7 @@ Le programme nous indique ensuite si notre entrée une fois encodé correspond b
       }
 ```
 
-Autrement dit, la solution de ce crackme est une suite de charactères qui une fois encodé `FUN_0010123f` correspond à `local_28` et `local_20`.
+Autrement dit, la solution de ce crackme est une suite de charactères qui une fois encodé par `FUN_0010123f` correspond à `local_28` et `local_20`.
 
 ## Solution
 
