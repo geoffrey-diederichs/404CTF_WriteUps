@@ -270,7 +270,6 @@ Seulement `FUN_0010123f` étant généré aléatoirement à chaque crackme, il v
 Pour se faire, nous allons utiliser un script python. Nous pouvons exécuter n'importe quelle commande GDB et récuperer le résultat de cette commande avec python, par exemple voici un script récupérant le point d'entrée du programme donné :
 
 ```python
-$ cat example.py 
 import gdb
 
 output = gdb.execute("info file", from_tty=False, to_string=True)
