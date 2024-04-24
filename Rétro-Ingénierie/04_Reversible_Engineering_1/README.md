@@ -217,7 +217,55 @@ Les variables `local_28` et `local_20` ainsi que l'algorithme d'encodage utilis�
   
 Il semble difficile de comprendre la fonction `FUN_0010123f` pour trouver un algoritme l'inversant, et cette fonction étant généré aléatoirement il serait impossible de le faire en 20 secondes pour envoyer la solution à temps. Essayons d'analyser dynamiquement le programme.
 
-## Solution
+## Analyse dynamique
+
+Utilisons GDB pour analyser ce que la fonction `FUN_0010123f` nous renvoie. Ajoutons un breakpoint au niveau de l'appel de `memcmp` et retrouvons notre entrée encodé dans le registre :
+
+```gdb
+gef➤  x/i 0x55555555520a
+=> 0x55555555520a:	call   0x555555555050 <memcmp@plt>
+
+gef➤  break *0x55555555520a
+Breakpoint 1 at 0x55555555520a
+
+gef➤  run $(python3 -c 'import sys; sys.stdout.buffer.write(b"A"*16)')
+```
+
+Une fois le breakpoint atteint :
+
+```gdb
+───────────────────────────────────────────────────────────────────── code:x86:64 ────
+   0x5555555551ff                  mov    edx, 0x10
+   0x555555555204                  mov    rsi, rax
+   0x555555555207                  mov    rdi, rcx
+●→ 0x55555555520a                  call   0x555555555050 <memcmp@plt>
+   ↳  0x555555555050 <memcmp@plt+0000> jmp    QWORD PTR [rip+0x2fba]        # 0x555555558010 <memcmp@got.plt>
+      0x555555555056 <memcmp@plt+0006> push   0x2
+      0x55555555505b <memcmp@plt+000b> jmp    0x555555555020
+      0x555555555060 <malloc@plt+0000> jmp    QWORD PTR [rip+0x2fb2]        # 0x555555558018 <malloc@got.plt>
+      0x555555555066 <malloc@plt+0006> push   0x3
+      0x55555555506b <malloc@plt+000b> jmp    0x555555555020
+───────────────────────────────────────────────────────────── arguments (guessed) ────
+memcmp@plt (
+   $rdi = 0x00005555555592a0 → 0xa8a8a8a8a8a8a8a8,
+   $rsi = 0x00007fffffffd8f0 → 0xa9dab58698ccb89d,
+   $rdx = 0x0000000000000010,
+   $rcx = 0x00005555555592a0 → 0xa8a8a8a8a8a8a8a8
+)
+```
+
+En analysant les arguments de `memcmp`, on déduit que `rdi` contient notre entrée encodée. Affichons la :
+
+```gdb
+gef➤  x/2gx $rdi
+0x5555555592a0:	0xa8a8a8a8a8a8a8a8	0xa8a8a8a8a8a8a8a8
+```
+
+On en déduit que le byte `0x41` (`A` en ascii), correspond à `0xa8` une fois encodé. En procédant de cette manière nous pouvons encoder plusieurs caractères, mais malheureusement aucun pattern ne semble émerger : il va faloir encoder tous les caractères possibles pour ensuite cracker la solution (`local_28` et `local_20`).
+  
+Seulement `FUN_0010123f` étant généré aléatoirement à chaque crackme, il va falloir automatiser le processus pour cracker la solution en moins de 20 secondes. Essayons de scripter la démarche réalisé précédemment.
+
+## Exploit
 
 ```console
 $ nc challenges.404ctf.fr 31998 > chall.zip && unzip chall.zip && chmod +x crackme.bin && gdb -q -x solver.py
