@@ -63,7 +63,7 @@ Il va donc falloir télécharger une archive sur le premier service, résoudre l
   
 Vous pouvez accéder à ces deux exemples d'archives : [archive 1](./chall_example1), [archive 2](./chall_example2).
   
-Commençons pas analyser [ce crackme](./chall_example1/crackme.bin).
+Commençons pas analyser [le premier crackme](./chall_example1/crackme.bin).
 
 ## Analyse statique
 
