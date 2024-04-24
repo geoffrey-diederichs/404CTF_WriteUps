@@ -61,9 +61,11 @@ Nope...
 
 Il va donc faloir télécharger une archive sur le premier service, résoudre le crackme qu'il contient, puis envoyer le token suivie de la solution au second service.
   
-Vous pouvez accéder à ces deux exemples d'archives envoyés par le service : [archive 1](./chall_example1), [archive 2](./chall_example2).
+Vous pouvez accéder à ces deux exemples d'archives : [archive 1](./chall_example1), [archive 2](./chall_example2).
   
 Commençons pas analyser [ce crackme](./chall_example1/crackme.bin).
+
+
 
 ## Solution
 
