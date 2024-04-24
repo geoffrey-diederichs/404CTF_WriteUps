@@ -297,7 +297,7 @@ Dans ce script, il a fallu :
 - Ouvrir le fichier `token.txt` pour récuperer le token.
 - Se connecter en TCP pour envoyer le token suivie du mot de passe.
 
-Il faut ensuite optimiser ce programme pour qu'il crack le solution en moins de 20 secondes. Pour se faire, au lieu d'encoder 1 byte à la fois comme précedemment dans la solution dynamqiue, nous allons encoder 16 bytes à la fois (la taille maximum des entrées possibles). Et après avoir cracker quelques crackme, nous pouvons remarquer que les mots de passes sont uniquement constitués de caractères alphanumériques réduisant énormément les bytes à encoder. Ce qui nous donne [ce script](./solver.py) qui crack le mot de passe et envoie la solution en quelques secondes :
+Il faut ensuite optimiser ce programme pour qu'il crack le solution en moins de 20 secondes. Pour se faire, au lieu d'encoder 1 byte à la fois comme précedemment dans la solution dynamique, nous allons encoder 16 bytes à la fois (la taille maximum des entrées possibles). Et après avoir cracker quelques crackme, nous pouvons remarquer que les mots de passes sont uniquement constitués de caractères alphanumériques réduisant énormément les bytes à encoder. Ce qui nous donne [ce script](./solver.py) qui crack le mot de passe et envoie la solution en quelques secondes :
 
 ```console
 $ nc challenges.404ctf.fr 31998 > chall.zip && unzip chall.zip && chmod +x crackme.bin && gdb -q -x solver.py
