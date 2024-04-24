@@ -24,7 +24,7 @@ Ce programme demande une entrée puis s'interrompt. Analysons le.
 
 ## Analyse statique
 
-Avec Ghidra on obtient la fonction suivante :
+En utilisant Ghidra, on trouve ces fonctions :
 
 ```C
 void processEntry entry(void)
