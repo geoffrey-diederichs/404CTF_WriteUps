@@ -176,6 +176,45 @@ Le programme nous indique ensuite si notre entrée une fois encodé correspond b
 
 Autrement dit, la solution de ce crackme est une suite de charactères qui une fois encodé par `FUN_0010123f` correspond à `local_28` et `local_20`.
 
+Analyson maintenant [ce deuxième crackme](./chall_example2/crackme.bin) pour identifier les différences entre les crackmes qui nous sont envoyés. En utilisant Ghidra, on 
+trouve ces deux différences :
+
+```C
+      local_28 = 0x19182d3d0fd0973e;
+      local_20 = 0x30272025ded09705;
+```
+
+```C
+void * FUN_0010123f(long param_1)
+{
+  byte bVar1;
+  byte bVar2;
+  void *pvVar3;
+  int local_c;
+
+  pvVar3 = malloc(0x10);
+  for (local_c = 0; local_c < 0x10; local_c = local_c + 1) {
+    bVar1 = *(byte *)(param_1 + local_c) ^ (*(byte *)(param_1 + local_c) >> 4) << 7 ^ 0x80;
+    bVar1 = bVar1 ^ (bVar1 >> 7) << 2;
+    bVar1 = bVar1 ^ (byte)(((int)(uint)bVar1 >> 2 & (int)(uint)bVar1 >> 1 & 1U) << 7);
+    bVar1 = bVar1 ^ (bVar1 >> 6) * '\x02' & 2 ^ 0x80;
+    bVar2 = bVar1 ^ (byte)(((uint)(bVar1 >> 7) & (int)(uint)bVar1 >> 4 & 1U) << 2) ^
+            (byte)((bVar1 >> 6 & 1) << 4);
+    bVar2 = bVar2 ^ (byte)((bVar2 >> 1 & 1) << 2);
+    bVar2 = bVar2 ^ (byte)(((uint)(bVar1 >> 7) & (int)(uint)bVar2 >> 5 & 1U) << 2);
+    bVar1 = bVar2 ^ (byte)(((int)(uint)bVar2 >> 4 & (int)(uint)bVar2 >> 1 & 1U) << 6) ^ 6;
+    bVar1 = bVar1 ^ ((byte)((int)(uint)bVar1 >> 6) & (byte)((int)(uint)bVar1 >> 3) & 1) * '\x02' ^
+            0xc0;
+    bVar1 = bVar1 ^ (bVar1 & (byte)((int)(uint)bVar1 >> 2) & 1) * '\x02';
+    *(byte *)((long)local_c + (long)pvVar3) =
+         bVar1 ^ ((byte)((int)(uint)bVar1 >> 5) & (byte)((int)(uint)bVar1 >> 6) & 1) * '\x02' ^ 1;
+  }
+  return pvVar3;
+}
+```
+
+Les variables `local_28` et `local_20` ainsi que l'algorithme d'encodage utilisé par la fonction `FUN_0010123f` semblent être généré aléatoirement pour chaque nouveau crackme.
+
 ## Solution
 
 ```console
