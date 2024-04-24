@@ -22,7 +22,7 @@ Il demande une entrée avant de s'interrompre. Essayons de trouver le mot de pas
 
 # Analyse statique
 
-Avec Ghidra nous trouvons les fonctions suivantes :
+En utilisant Ghidra, on trouve ces fonctions :
 
 ```C
 undefined8 main(void)
