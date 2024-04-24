@@ -65,7 +65,9 @@ Vous pouvez accéder à ces deux exemples d'archives : [archive 1](./chall_examp
   
 Commençons pas analyser [ce crackme](./chall_example1/crackme.bin).
 
+## Analyse statique
 
+En utilisant Ghidra, on retrouve ces deux fonctions :
 
 ## Solution
 
