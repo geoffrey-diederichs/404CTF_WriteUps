@@ -261,11 +261,44 @@ gef➤  x/2gx $rdi
 0x5555555592a0:	0xa8a8a8a8a8a8a8a8	0xa8a8a8a8a8a8a8a8
 ```
 
-On en déduit que le byte `0x41` (`A` en ascii), correspond à `0xa8` une fois encodé. En procédant de cette manière nous pouvons encoder plusieurs caractères, mais malheureusement aucun pattern ne semble émerger : il va faloir encoder tous les caractères possibles pour ensuite cracker la solution (`local_28` et `local_20`).
+On en déduit que le byte `0x41` (`A` en ascii), correspond à `0xa8` une fois encodé. En procédant de cette manière nous pouvons encoder plusieurs caractères, mais malheureusement aucun pattern ne semble émerger : il va faloir encoder tous les bytes possibles pour ensuite cracker la solution (`local_28` et `local_20`).
   
-Seulement `FUN_0010123f` étant généré aléatoirement à chaque crackme, il va falloir automatiser le processus pour cracker la solution en moins de 20 secondes. Essayons de scripter la démarche réalisé précédemment.
+Seulement `FUN_0010123f` étant généré aléatoirement à chaque crackme, il va falloir automatiser le processus pour cracker la solution en moins de 20 secondes. Essayons de scripter la démarche réalisé lors de cette analyse dynamqiue.
 
 ## Exploit
+
+Pour se faire, nous allons utiliser un script python. Nous pouvons exécuter n'importe quelle commande GDB et récuperer le résultat de cette commande avec python, par exemple voici un script récupérant le point d'entrée du programme donné :
+
+```python
+$ cat example.py 
+import gdb
+
+output = gdb.execute("info file", from_tty=False, to_string=True)
+for i in output.split("\n"):
+    if "Entry point" in i:
+        print("This is the entry point : ", i.split(" ")[2])
+```
+
+```console
+$ gdb -q crackme.bin -x example.py
+GEF for linux ready, type `gef' to start, `gef config' to configure
+88 commands loaded and 5 functions added for GDB 13.2 in 0.00ms using Python engine 3.11
+GEF for linux ready, type `gef' to start, `gef config' to configure
+88 commands loaded and 5 functions added for GDB 13.2 in 0.00ms using Python engine 3.11
+Reading symbols from crackme.bin...
+(No debugging symbols found in crackme.bin)
+This is the entry point :  0x1080
+```
+
+Dans ce script, il a fallu :
+- Récupérer le point d'entrée du programme à partir duquel les adresses utilisées pour interrompre l'exécution du programme sont calculées. 
+- Interrompre le programme à un moment bien précis lors duquel la solution encodée est enregistré dans la mémoire pour pouvoir la récupérer.
+- Encoder des bytes en les injectant, puis interrompre le programme au moment de l'appel de `memcmp` pour récupérer l'entrée encodée dans la mémoire.
+- Comparer les caratères encodés à la solution encodé pour en déduire le mot de passe.
+- Ouvrir le fichier `token.txt` pour récuperer le token.
+- Se connecter en TCP pour envoyer le token suivie du mot de passe.
+
+Il faut ensuite optimiser ce programme pour qu'il crack le solution en moins de 20 secondes. Pour se faire, au lieu d'encoder 1 byte à la fois comme précedemment dans la solution dynamqiue, nous allons encoder 16 bytes à la fois (la taille maximum des entrées possibles). Et après avoir cracker quelques crackme, nous pouvons remarquer que les mots de passes sont uniquement constitués de caractères alphanumériques réduisant énormément les bytes à encoder. Ce qui nous donne [ce script](./solver.py) qui crack le mot de passe et envoie la solution en quelques secondes :
 
 ```console
 $ nc challenges.404ctf.fr 31998 > chall.zip && unzip chall.zip && chmod +x crackme.bin && gdb -q -x solver.py
