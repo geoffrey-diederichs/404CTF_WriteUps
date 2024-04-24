@@ -215,7 +215,7 @@ void * FUN_0010123f(long param_1)
 
 Les variables `local_28` et `local_20` ainsi que l'algorithme d'encodage utilisé par la fonction `FUN_0010123f` semblent être généré aléatoirement pour chaque nouveau crackme.  
   
-Il semble difficile de comprendre la fonction `FUN_0010123f` pour trouver un algoritme l'inversant, et cette fonction étant généré aléatoirement il serait impossible de le faire en 20 secondes pour envoyer la solution à temps. Essayons d'analyser dynimaquement le programme.
+Il semble difficile de comprendre la fonction `FUN_0010123f` pour trouver un algoritme l'inversant, et cette fonction étant généré aléatoirement il serait impossible de le faire en 20 secondes pour envoyer la solution à temps. Essayons d'analyser dynamiquement le programme.
 
 ## Solution
 
