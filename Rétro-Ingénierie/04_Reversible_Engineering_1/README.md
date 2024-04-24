@@ -59,7 +59,7 @@ test
 Nope...
 ```
 
-Il va donc faloir télécharger une archive sur le premier service, résoudre le crackme qu'il contient, puis envoyer le token suivie de la solution au second service.
+Il va donc falloir télécharger une archive sur le premier service, résoudre le crackme qu'il contient, puis envoyer le token suivie de la solution au second service le tout en moins de 20 secondes.
   
 Vous pouvez accéder à ces deux exemples d'archives : [archive 1](./chall_example1), [archive 2](./chall_example2).
   
@@ -175,7 +175,7 @@ Le programme nous indique ensuite si notre entrée une fois encodé correspond b
 ```
 
 Autrement dit, la solution de ce crackme est une suite de charactères qui une fois encodé par `FUN_0010123f` correspond à `local_28` et `local_20`.
-
+  
 Analyson maintenant [ce deuxième crackme](./chall_example2/crackme.bin) pour identifier les différences entre les crackmes qui nous sont envoyés. En utilisant Ghidra, on 
 trouve ces deux différences :
 
@@ -213,7 +213,9 @@ void * FUN_0010123f(long param_1)
 }
 ```
 
-Les variables `local_28` et `local_20` ainsi que l'algorithme d'encodage utilisé par la fonction `FUN_0010123f` semblent être généré aléatoirement pour chaque nouveau crackme.
+Les variables `local_28` et `local_20` ainsi que l'algorithme d'encodage utilisé par la fonction `FUN_0010123f` semblent être généré aléatoirement pour chaque nouveau crackme.  
+  
+Il semble difficile de comprendre la fonction `FUN_0010123f` pour trouver un algoritme l'inversant, et cette fonction étant généré aléatoirement il serait impossible de le faire en 20 secondes pour envoyer la solution à temps. Essayons d'analyser dynimaquement le programme.
 
 ## Solution
 
