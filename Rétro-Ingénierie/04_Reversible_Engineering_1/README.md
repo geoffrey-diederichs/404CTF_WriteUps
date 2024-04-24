@@ -69,6 +69,113 @@ Commençons pas analyser [ce crackme](./chall_example1/crackme.bin).
 
 En utilisant Ghidra, on retrouve ces deux fonctions :
 
+```C
+undefined8 FUN_00101169(int param_1,long param_2)
+{
+  int iVar1;
+  undefined8 uVar2;
+  size_t sVar3;
+  void *__s1;
+  undefined8 local_28;
+  undefined8 local_20;
+  int local_c;
+  
+  if (param_1 < 2) {
+    puts("J\'ai besoin d\'un argument!");
+    uVar2 = 1;
+  }
+  else {
+    sVar3 = strlen(*(char **)(param_2 + 8));
+    local_c = (int)sVar3;
+    if (local_c == 16) {
+      local_28 = 0xa9dab58698ccb89d;
+      local_20 = 0xbbd949da83d394c9;
+      __s1 = (void *)FUN_0010123f(*(undefined8 *)(param_2 + 8));
+      iVar1 = memcmp(__s1,&local_28,16);
+      if (iVar1 == 0) {
+        puts("GG!");
+        uVar2 = 0;
+      }
+      else {
+        puts("Dommage... Essaie encore!");
+        uVar2 = 1;
+      }
+    }
+    else {
+      puts(&DAT_00102028);
+      uVar2 = 1;
+    }
+  }
+  return uVar2;
+}
+```
+
+```C
+void * FUN_0010123f(long param_1)
+{
+  byte bVar1;
+  byte bVar2;
+  void *pvVar3;
+  int local_c;
+  
+  pvVar3 = malloc(0x10);
+  for (local_c = 0; local_c < 0x10; local_c = local_c + 1) {
+    bVar1 = *(byte *)(param_1 + local_c);
+    bVar1 = bVar1 ^ (byte)((bVar1 >> 2 & 1) << 4) ^ (bVar1 >> 5) * '\x02' & 2;
+    bVar1 = bVar1 ^ (byte)(((uint)bVar1 & (int)(uint)bVar1 >> 3 & 1U) << 7);
+    bVar1 = bVar1 ^ (bVar1 >> 7 & (byte)((int)(uint)bVar1 >> 2) & 1) * '\x02';
+    bVar1 = bVar1 ^ ((char)bVar1 >> 7) * -2 & 2U;
+    bVar1 = bVar1 ^ (byte)((int)(uint)bVar1 >> 5) & 1 & (byte)((int)(uint)bVar1 >> 1) ^ 0x40;
+    bVar2 = bVar1 ^ bVar1 >> 1 & 1;
+    bVar1 = bVar2 ^ (byte)((int)(uint)bVar2 >> 5) & 1 & (byte)((int)(uint)bVar2 >> 2) ^
+            (byte)((bVar1 >> 5 & 1) << 4);
+    bVar1 = bVar1 ^ (byte)((bVar1 & 1) << 2);
+    bVar1 = bVar1 ^ (byte)((int)(uint)bVar1 >> 1) & 1 & (byte)((int)(uint)bVar1 >> 6) ^ 0x21;
+    bVar1 = bVar1 ^ bVar1 >> 5 & 1 ^ 0x80;
+    bVar1 = bVar1 ^ (byte)(((int)(uint)bVar1 >> 2 & (int)(uint)bVar1 >> 1 & 1U) << 3) ^
+            (bVar1 >> 7) << 3;
+    *(byte *)((long)local_c + (long)pvVar3) =
+         bVar1 ^ (byte)(((int)(uint)bVar1 >> 3 & (int)(uint)bVar1 >> 4 & 1U) << 2) ^ 5;
+  }
+  return pvVar3;
+}
+```
+
+Notre entrée est stocké dans la variable `param_2` passé à la fonction `FUN_00101169`
+en argument. Cette fonction va ensuite vérifier que notre entrée fasse 16 charactères :
+
+```C
+    sVar3 = strlen(*(char **)(param_2 + 8));
+    local_c = (int)sVar3;
+    if (local_c == 16) {
+```
+
+Si c'est bien le cas, elle va ensuite l'envoyer à la fonction `FUN_0010123f`. Cette fonction va réaliser des opérations arithmétiques pour encoder `param_2`. Le résultat sera renvoyé à `FUN_00101169` qui le comparera à `local_28` et `local_20` :
+
+```C
+      local_28 = 0xa9dab58698ccb89d;
+      local_20 = 0xbbd949da83d394c9;
+      __s1 = (void *)FUN_0010123f(*(undefined8 *)(param_2 + 8));
+      iVar1 = memcmp(__s1,&local_28,16);
+```
+
+Une nuance à bien comprendre dans ce code est quei dans cette ligne `iVar1 = memcmp(__s1,&local_28,16);`, `memcmp` va évaluer 16 bytes à partir du pointeur vers `local_28`. Or `local_28` et `local_20` font chacuns 8 bytes et sont écrit à la suite dans la stack, autrement dit le code compare bien notre entrée à ces deux variables.  
+  
+Le programme nous indique ensuite si notre entrée une fois encodé correspond bien à ces deux variables :
+
+```C
+      if (iVar1 == 0) {
+        puts("GG!");
+        uVar2 = 0;
+      }
+      else {
+        puts("Dommage... Essaie encore!");
+        uVar2 = 1;
+      }
+```
+
+Autrement dit, la solution de ce crackme est une suite de charactères qui une fois encodé `FUN_0010123f` correspond à `local_28` et `local_20`.
+
 ## Solution
 
 ```console
