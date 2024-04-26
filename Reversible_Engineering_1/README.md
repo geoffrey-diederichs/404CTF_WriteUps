@@ -210,4 +210,103 @@ void * FUN_0010123f(long param_1)
 
 As we can see, it seems that both the encoded password and encoding function are randomly generated for each crackme. There is either a pattern to be found to easily reverse the encoding function and find the password, or we'll need to brute force it.  
   
-Let's dynamically analyse [the first crackme](./chall_example2/crackme.bin) to find out which case scenario we're in.
+Let's dynamically analyse [the first crackme](./chall_example1/crackme.bin) to find out which case scenario we're in.
+
+## Dynamic analysis
+
+Using GDB let's have a deeper look into what `FUN_0010123f` returns. We'll add a breakpoint after the `memcmp` call to find our encoded entry in the register :
+
+```gdb
+gef➤  x/i 0x55555555520a
+=> 0x55555555520a:	call   0x555555555050 <memcmp@plt>
+
+gef➤  break *0x55555555520a
+Breakpoint 1 at 0x55555555520a
+
+gef➤  run $(python3 -c 'import sys; sys.stdout.buffer.write(b"A"*16)')
+```
+
+Once the breakpoint's reached :
+
+```gdb
+───────────────────────────────────────────────────────────────────── code:x86:64 ────
+   0x5555555551ff                  mov    edx, 0x10
+   0x555555555204                  mov    rsi, rax
+   0x555555555207                  mov    rdi, rcx
+●→ 0x55555555520a                  call   0x555555555050 <memcmp@plt>
+   ↳  0x555555555050 <memcmp@plt+0000> jmp    QWORD PTR [rip+0x2fba]        # 0x555555558010 <memcmp@got.plt>
+      0x555555555056 <memcmp@plt+0006> push   0x2
+      0x55555555505b <memcmp@plt+000b> jmp    0x555555555020
+      0x555555555060 <malloc@plt+0000> jmp    QWORD PTR [rip+0x2fb2]        # 0x555555558018 <malloc@got.plt>
+      0x555555555066 <malloc@plt+0006> push   0x3
+      0x55555555506b <malloc@plt+000b> jmp    0x555555555020
+───────────────────────────────────────────────────────────── arguments (guessed) ────
+memcmp@plt (
+   $rdi = 0x00005555555592a0 → 0xa8a8a8a8a8a8a8a8,
+   $rsi = 0x00007fffffffd8f0 → 0xa9dab58698ccb89d,
+   $rdx = 0x0000000000000010,
+   $rcx = 0x00005555555592a0 → 0xa8a8a8a8a8a8a8a8
+)
+```
+
+By analysing the `memcmp` call's arguments, we can deduce that `rdi` contains our encoded entry. Let's take a look at it :
+
+```gdb
+gef➤  x/2gx $rdi
+0x5555555592a0:	0xa8a8a8a8a8a8a8a8	0xa8a8a8a8a8a8a8a8
+```
+
+We can see that the `0x41` bytes (`A` in ascii) we injected got encoded to `0xa8`. If our encoded password contained a`0xa8`, we would have found one the password's character.  
+  
+We can now repeat this process on different bytes to try and find a pattern, but sadly none seem to emerge : we'll have to brute force the algorithm by testing every byte one by one until we find the password.
+  
+Since the encoding function seems to be generated randomly, we'll need to script this procedure.
+
+## Exploit
+
+To do so, we'll use Python. We can execute any GDB command from a Python script, and get the output of that command as a string to parse. For example, here is a script retrieving the entry point of a program :
+
+```python
+import gdb
+
+output = gdb.execute("info file", from_tty=False, to_string=True)
+for i in output.split("\n"):
+    if "Entry point" in i:
+        print("This is the entry point : ", i.split(" ")[2])
+```
+
+```console
+$ gdb -q crackme.bin -x example.py
+GEF for linux ready, type `gef' to start, `gef config' to configure
+88 commands loaded and 5 functions added for GDB 13.2 in 0.00ms using Python engine 3.11
+GEF for linux ready, type `gef' to start, `gef config' to configure
+88 commands loaded and 5 functions added for GDB 13.2 in 0.00ms using Python engine 3.11
+Reading symbols from crackme.bin...
+(No debugging symbols found in crackme.bin)
+This is the entry point :  0x1080
+```
+
+[This script](./solver.py) solve the given `crackme.bin`, by :
+- Retrieving the entry point of the program, from which the addresses where we'll need to add breakpoints to analyse memory will be calculated.
+- Retrieving the encoded password in memory.
+- Encoding bytes by passing them to the program as arguments, and retrieve them once encoded by inspecting memory during the `memcmp` call.
+- Comparing our encoded bytes to the encoded password to deduce the password.
+- Connecting to the server to send it both our token and password.
+
+This script is also optimized enough to find the password in less than a few seconds.  
+To do so, instead of encoding one byte at a time like we did in the dynamic analysis, the script encodes 16 bytes at a time since the program takes an input of 16 bytes. Also, after craking a few passwords, we can notice that they almost always consist of alphanumerical characters. That's why this script only works with those characters to considerably reduce the number of bytes we have to encode.  
+  
+Finally let's run it :
+
+```console
+$ nc challenges.404ctf.fr 31998 > chall.zip && unzip chall.zip && chmod +x crackme.bin && gdb -q -x solver.py
+
+Token ? 
+ > 7bdbab98c126b915d314e52aeb63b33b
+Alors, la solution ? 
+ > M2GW4OQsS0MiLsYm
+GG. Voila ton flag!
+404CTF{e9d749db81e9f8caf745a5547da13579}
+```
+
+We get the flag !
