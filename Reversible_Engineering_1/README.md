@@ -107,7 +107,8 @@ undefined8 FUN_00101169(int param_1,long param_2)
   }
   return uVar2;
 }
-
+```
+```C
 void * FUN_0010123f(long param_1)
 {
   byte bVar1;
