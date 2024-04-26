@@ -146,7 +146,7 @@ Our entry is passed as `param_2` to the `FUN_00101169` function as an argument. 
     if (local_c == 16) {
 ```
 
-If that's the case, it will pass it to the `FUN_0010123f` function. This function will encode `param_2` and return the result it. Finally, `FUN_00101169` will compare the encoded entry to `local_28` and `local_20` :
+If that's the case, it will pass it to the `FUN_0010123f` function. This function will encode `param_2` and return it. Finally, `FUN_00101169` will compare the encoded entry to `local_28` and `local_20` :
 
 ```C
       local_28 = 0xa9dab58698ccb89d;
