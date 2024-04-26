@@ -256,7 +256,7 @@ gef➤  x/2gx $rdi
 0x5555555592a0:	0xa8a8a8a8a8a8a8a8	0xa8a8a8a8a8a8a8a8
 ```
 
-We can see that the `0x41` bytes (`A` in ascii) we injected got encoded to `0xa8`. If our encoded password contained a`0xa8`, we would have found one the password's character.  
+We can see that the `0x41` bytes (`A` in ascii) we injected got encoded to `0xa8`. If our encoded password contained a`0xa8`, we would have found one of the password's character.  
   
 We can now repeat this process on different bytes to try and find a pattern, but sadly none seem to emerge : we'll have to brute force the algorithm by testing every byte one by one until we find the password.
   
