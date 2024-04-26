@@ -286,7 +286,7 @@ Reading symbols from crackme.bin...
 This is the entry point :  0x1080
 ```
 
-[This script](./solver.py) solve the given `crackme.bin`, by :
+[This script](./solver.py) solves the given `crackme.bin` by :
 - Retrieving the entry point of the program, from which the addresses where we'll need to add breakpoints to analyse memory will be calculated.
 - Retrieving the encoded password in memory.
 - Encoding bytes by passing them to the program as arguments, and retrieve them once encoded by inspecting memory during the `memcmp` call.
