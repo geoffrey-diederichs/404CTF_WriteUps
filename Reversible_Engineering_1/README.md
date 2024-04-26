@@ -170,7 +170,7 @@ Next, the program will tell us if we gave the right password depending on the `m
       }
 ```
 
-In other words, the password will be a 16 characters long input that once encoded by `FUN_0010123f` corresponds to `local_28` and `local_20`. From now on, we'll call `FUN_0010123f` the encoding function, and the two variables `local_28, `local_20` the encoded password.  
+In other words, the password will be a 16 characters long input that once encoded by `FUN_0010123f` corresponds to `local_28` and `local_20`. From now on, we'll call `FUN_0010123f` the encoding function, and the two variables `local_28`, `local_20` the encoded password.  
   
 Let's analyse [this second crackme](./chall_example2/crackme.bin) to try and find differences between the two programs. Using Ghidra we find those two differences :
 
