@@ -1,4 +1,4 @@
-# [404CTF](./https://ctf.404ctf.fr)
+# [404CTF](https://ctf.404ctf.fr)
 
 Write Ups from some of the most interesting challenges I've solve during 2024's edition of the 404CTF.
 
