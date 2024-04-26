@@ -1,4 +1,4 @@
-# [404CTF write ups](./404ctf.com)
+# [404CTF](./ctf.404ctf.fr)
 
 Write Ups from some of the most interesting challenges I've solve during 2024's edition of the 404CTF.
 
