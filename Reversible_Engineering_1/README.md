@@ -60,7 +60,7 @@ test
 Nope...
 ```
   
-You can access those two examples of archives sent by the servers : [archive 1](./chall_example1), [archive 2](./chall_example2).  
+You can access those two examples of archives sent by the server : [archive 1](./chall_example1), [archive 2](./chall_example2).  
   
 Let's analyse [the first crackme](./chall_example1/crackme.bin).
 
