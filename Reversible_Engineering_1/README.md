@@ -138,7 +138,7 @@ void * FUN_0010123f(long param_1)
 }
 ```
 
-Our entry is passed as `param_2` to the `FUN_00101169` function as an argument. This function will check if the entry is indeed 16 characters long :
+Our entry is passed as `param_2` to the `FUN_00101169` function. This function will check if the entry is indeed 16 characters long :
 
 ```C
     sVar3 = strlen(*(char **)(param_2 + 8));
