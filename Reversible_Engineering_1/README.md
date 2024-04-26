@@ -208,4 +208,6 @@ void * FUN_0010123f(long param_1)
 }
 ```
 
-As we can see, it seems that both the encoded password and encoding function are randomly generated for each crackme. There is either a pattern to be found to easily reverse the encoding function and find the password, or we'll need to brute force it. Let's analyse dynamically [the first crackme](./chall_example2/crackme.bin) to find out which case scenario we're in.
+As we can see, it seems that both the encoded password and encoding function are randomly generated for each crackme. There is either a pattern to be found to easily reverse the encoding function and find the password, or we'll need to brute force it.  
+  
+Let's analyse dynamically [the first crackme](./chall_example2/crackme.bin) to find out which case scenario we're in.
