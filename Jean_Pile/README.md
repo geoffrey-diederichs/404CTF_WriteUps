@@ -112,7 +112,7 @@ void service(void)
 }
 ```
 
-This is the function used to get the user input, in which we can spot thsoe line of code : `char local_38 [40];`, `pcVar1 = fgets(local_38,200,stdin);`. The program is asking for an input of 200 bytes even tho `local_38` is only 40 bytes long : this is vulnerable to a buffer overflow.
+This is the function used to get the user input, in which we can spot these lines : `char local_38 [40];`, `pcVar1 = fgets(local_38,200,stdin);`. The program is asking for an input of 200 bytes even tho `local_38` is only 40 bytes long : this is vulnerable to a buffer overflow.
 
 There does not seem to be a win function, and as stated in the subject of the challenge, ASLR is activated, but the file is dynamically linked and the program is using puts : we'll can execute a ret2lib.  
   
