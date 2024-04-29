@@ -112,10 +112,9 @@ void service(void)
 }
 ```
 
-This is the function used to get the user input, in which we can this spot this line of code :
-`pcVar1 = fgets(local_38,200,stdin);`. The program is asking for an input of 200 bytes even tho `local_38` is only 40 bytes long : this is a buffer overflow.
+This is the function used to get the user input, in which we can spot thsoe line of code : `char local_38 [40];`, `pcVar1 = fgets(local_38,200,stdin);`. The program is asking for an input of 200 bytes even tho `local_38` is only 40 bytes long : this is vulnerable to a buffer overflow.
 
-There does not seem to be a win function, and as stated in the subject of the challenge ASLR is activated : we'll have to bypass by executing a ret2lib.
+There does not seem to be a win function, and as stated in the subject of the challenge, ASLR is activated : we'll have to bypass it by executing a ret2lib.
 
 ## Dynamic analysis
 
