@@ -1,6 +1,6 @@
 # Jean Pile
 
-Here's a translated version of the subject :
+Here is a translated version of the challenge's description we were given :
 
 ```md
 Annual 404 Race Canteen
