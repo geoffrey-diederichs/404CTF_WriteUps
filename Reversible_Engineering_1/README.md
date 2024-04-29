@@ -295,7 +295,7 @@ This is the entry point :  0x1080
 - Connecting to the server to send it both our token and password.
 
 This script is also optimized enough to find the password in less than a few seconds.  
-To do so, instead of encoding one byte at a time like we did in the dynamic analysis, the script encodes 16 bytes at a time since the program takes an input of 16 bytes. Also, after craking a few passwords, we can notice that they almost always consist of alphanumerical characters. That's why this script only works with those characters to considerably reduce the number of bytes we have to encode.  
+To do so, instead of encoding one byte at a time like we did in the dynamic analysis, we encode 16 bytes at a time since the program takes an input of 16 bytes. Also, after craking a few passwords, we can notice that they almost always consist of alphanumerical characters : only working with those characters considerably reduces the number of bytes we have to encode.  
   
 Finally let's run it :
 
