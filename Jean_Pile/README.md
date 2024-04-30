@@ -193,7 +193,7 @@ gef➤  x/i service+256
    0x400a36 <service+256>:	call   0x400680 <fgets@plt>
 ```
 
-Using all of those informations, we can write [this script](./leak.py) that gives us this leak :
+Using all of these informations, we can write [this script](./leak.py) that gives us this leak :
 
 ```python
 $ python3 leak.py
