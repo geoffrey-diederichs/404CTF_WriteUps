@@ -4,7 +4,7 @@ Write-ups from some of the most interesting challenges I've solve during 2024's 
 
 ## [Jean Pile](./Jean_Pile)
 
-Bypassing ASLR using a ret2lib.
+Bypassing ASLR using a ret2libc.
 
 ## [Revers(ibl)e Engineering [1/2]](./Reversible_Engineering_1)
 
