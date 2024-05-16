@@ -251,7 +251,7 @@ This is the entry point :  0x1080
 
 Let's try, step by step, to test a few characters. We'll code a script  executing the same commands we do, and then put it all together to crack this binary.
 
-First, the binary being stripped, and PIE being activated, we'll need to calculate the address of the instructions we want to put breakpoints at, based on the entry point and offsets we'll determine. Let's start by retrieving the entry point :
+First, the binary being stripped and PIE being activated, we'll need to calculate the address of the instructions we want to put breakpoints at based on the entry point and offsets we'll determine. Let's start by retrieving the entry point :
 
 ```gdb
 gef➤  info file
