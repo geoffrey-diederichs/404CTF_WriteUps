@@ -114,9 +114,9 @@ void service(void)
 
 This is the function used to get the user input, in which we can spot these lines : `char local_38 [40];`, `pcVar1 = fgets(local_38,200,stdin);`. The program is asking for an input of 200 bytes even tho `local_38` is only 40 bytes long : this is vulnerable to a buffer overflow.
 
-There does not seem to be a win function, and ASLR is activated, but the file is dynamically linked and the program is using the `puts` function : we can execute a ret2lib.  
+There does not seem to be a win function, and ASLR is activated, but the file is dynamically linked and the program is using the `puts` function : we can execute a ret2libc.  
   
-ret2lib is a way to bypass ASLR by leaking the GOT : this contains the addresses of functions from the libc used at run time by our program. Libc contains functions such as `system` we can use to spawn a shell. To find these addresses, we'll leak some of the GOT table entries by using the `puts` function to print them. Using this leak, we'll go online and determine which libc we're dealing with. Once we found the right one, we can use the offset between the function's address we have (such as `puts`), and the function's address we want (such as `system`), to calculate where we want to redirect program execution.
+ret2libc is a way to bypass ASLR by leaking the GOT : this contains the addresses of functions from the libc used at run time by our program. Libc contains functions such as `system` we can use to spawn a shell. To find these addresses, we'll leak some of the GOT table entries by using the `puts` function to print them. Using this leak, we'll go online and determine which libc we're dealing with. Once we found the right one, we can use the offset between the function's address we have (such as `puts`), and the function's address we want (such as `system`), to calculate where we want to redirect program execution.
 
 ## Dynamic analysis
 
