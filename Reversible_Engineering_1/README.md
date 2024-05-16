@@ -260,7 +260,6 @@ Local exec file:
 	`/home/coucou/Documents/404CTF_WriteUps/Reversible_Engineering_1/chall_example1/crackme.bin', 
         file type elf64-x86-64.
 	Entry point: 0x1080
-[...]
 
 gef➤  run
 Starting program: /home/coucou/Documents/404CTF_WriteUps/Reversible_Engineering_1/chall_example1/crackme.bin 
@@ -275,10 +274,9 @@ Local exec file:
 	`/home/coucou/Documents/404CTF_WriteUps/Reversible_Engineering_1/chall_example1/crackme.bin', 
         file type elf64-x86-64.
 	Entry point: 0x555555555080
-[...]
 ```
 
-Once we've runned the program once, the addresses won't be modified inside GDB anymore.
+Once we've ran the program once, the addresses won't be modified inside GDB anymore.
 
 We've already coded this first part earlier to show how Python works with GDB, so let's directly jump to the next step : extracting the encoded password. Those should be in memory when they're being defined in the `main` function :
 
