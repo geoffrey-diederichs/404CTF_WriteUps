@@ -375,7 +375,7 @@ Breakpoint 1, 0x00005555555551dd in ?? ()
 ['0x9d', '0xb8', '0xcc', '0x98', '0x86', '0xb5', '0xda', '0xa9', '0xc9', '0x94', '0xd3', '0x83', '0xda', '0x49', '0xd9', '0xbb']
 ```
 
-Now, we'll need to input characters, and extract their encoded versions. The encoded input should be in memory during the `memcmp` call :
+Now we'll need to input characters and extract their encoded versions. The encoded input should be in memory during the `memcmp` call :
 
 ```C
 win_condition = memcmp(encoded_input,&encoded_pass_1,16);
