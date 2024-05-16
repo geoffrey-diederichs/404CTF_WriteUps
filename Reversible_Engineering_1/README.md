@@ -309,7 +309,7 @@ gef➤  print $rdx
 $3 = 0xbbd949da83d394c9
 ```
 
-We can see that the encoded password is stored in the register. Now let's calculate the offset between this instruction and the entry point :
+We can see that the encoded password is stored in the register. Now let's calculate the offset between this instruction and the entry point using Python :
 
 ```python3
 >>> 0x5555555551dd - 0x555555555080
