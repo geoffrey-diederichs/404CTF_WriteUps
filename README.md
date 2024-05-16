@@ -8,4 +8,4 @@ Bypassing ASLR using a ret2lib.
 
 ## [Revers(ibl)e Engineering [1/2]](./Reversible_Engineering_1)
 
-Scripting GDB with Python to brute force a randomly generated encoding algorithm, and find the password in less than 20 seconds.
+Scripting GDB using Python to brute force a randomly generated encoding algorithm in less than 20 seconds.
