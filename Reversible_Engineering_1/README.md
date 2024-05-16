@@ -287,7 +287,7 @@ encoded_pass_1 = 0xa9dab58698ccb89d;
 encoded_pass_2 = 0xbbd949da83d394c9;
 ```
 
-Let's try and find those instructions in GDB :
+Let's try and find these instructions in GDB :
 
 ```gdb
 ───────────────────────────────────────────────────────────────────────────────────────────────────── code:x86:64 ────
