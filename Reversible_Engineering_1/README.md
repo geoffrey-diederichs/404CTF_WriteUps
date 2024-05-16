@@ -420,42 +420,10 @@ Our encoded password seems to be stored inside the `rdi`. Since we are working o
 394
 ```
 
-Using all of this, we can code this script inputing 16 characters and extracting their encoded version :
+Using all of this, we can add these functions to our script to input 16 characters and extract their encoded version :
 
 ```python
-import gdb
-
-ENCODED_PASS_OFFSET = 349 
 MEMSET_OFFSET = 394
-
-def gdb_exec(command: str) -> str:
-    return gdb.execute(command, from_tty=False, to_string=True)
-
-def find_entry() -> str:
-    info = gdb_exec("info file")
-    for i in info.split("\n"):
-        if "Entry point:" in i:
-            return i.split(" ")[2]
-    return ""
-
-def find_encoded_pass(entry_addr: str) -> [hex]:
-    pass_addr = hex(int(entry_addr, 16)+ENCODED_PASS_OFFSET)
-    gdb_exec(f"break *{pass_addr}")
-    gdb_exec("run "+"A"*16)
-    full_pass = [ "_" for i in range(16) ]
-    
-    enc_pass = gdb_exec("print $rax")
-    enc_pass = enc_pass.split(" ")[2][2:18]
-    for i in range(int(len(enc_pass)/2)):
-        full_pass[7-i] = hex(int(enc_pass[(i*2):(i*2)+2], 16))
-
-    enc_pass = gdb_exec("print $rdx")
-    enc_pass = enc_pass.split(" ")[2][2:18]
-    for i in range(int(len(enc_pass)/2)):
-         full_pass[15-i] = hex(int(enc_pass[(i*2):(i*2)+2], 16))
-
-    gdb_exec("delete breakpoints")
-    return full_pass
 
 def set_break(entry_addr: str) -> None:
     new_char_addr = hex(int(entry_addr, 16)+MEMSET_OFFSET)
@@ -551,7 +519,7 @@ $ ./crackme.bin cE2bxX4T3j5q496S
 GG!
 ```
 
-We got the solution ! Now all that remains, is sending it back to the servers immediately using Python. [This script](./solver.py) puts it all together and should give us the flag in few seconds :
+We got the solution ! Now all that remains, is sending it back to the servers immediately using Python. [This script](./solver.py) puts it all together and should give us the flag in a few seconds :
 
 ```console
 $ nc challenges.404ctf.fr 31998 > chall.zip && unzip chall.zip && chmod +x crackme.bin && gdb -q -x solver.py
