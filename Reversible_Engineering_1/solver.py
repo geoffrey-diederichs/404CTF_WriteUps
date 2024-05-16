@@ -41,7 +41,7 @@ def set_break(entry_addr: str) -> None:
     new_char_addr = hex(int(entry_addr, 16)+MEMSET_OFFSET)
     gdb_exec(f"break *{new_char_addr}")
 
-def encode(x: [chr]) -> [hex]:
+def encode(x: [chr]) -> [int]:
     argument = ""
     for i in x:
         argument += i

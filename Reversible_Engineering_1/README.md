@@ -34,6 +34,14 @@ $ cat token.txt
 $ file crackme.bin
 crackme.bin: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=68dd82947dbeb975ddc70502cb740514ff8716a2, for GNU/Linux 3.2.0, stripped
 
+$ checksec crackme.bin 
+[*] '/404CTF_WriteUps/Reversible_Engineering_1/chall_example1/crackme.bin'
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      PIE enabled
+
 $ chmod +x crackme.bin && ./crackme.bin 
 J'ai besoin d'un argument!
 
@@ -66,50 +74,50 @@ Let's analyse [the first crackme](./chall_example1/crackme.bin).
 
 ## Static analysis
 
-Using Ghidra, we can find those functions :
+Using Ghidra, we can find these functions :
 
 ```C
-undefined8 FUN_00101169(int param_1,long param_2)
+undefined8 main(int param_1,long user_input)
 {
-  int iVar1;
-  undefined8 uVar2;
-  size_t sVar3;
-  void *__s1;
-  undefined8 local_28;
-  undefined8 local_20;
-  int local_c;
+  int win_condition;
+  undefined8 uVar1;
+  size_t user_input_len;
+  void *encoded_input;
+  undefined8 encoded_pass_1;
+  undefined8 encoded_pass_2;
+  int input_len;
   
   if (param_1 < 2) {
     puts("J\'ai besoin d\'un argument!");
-    uVar2 = 1;
+    uVar1 = 1;
   }
   else {
-    sVar3 = strlen(*(char **)(param_2 + 8));
-    local_c = (int)sVar3;
-    if (local_c == 16) {
-      local_28 = 0xa9dab58698ccb89d;
-      local_20 = 0xbbd949da83d394c9;
-      __s1 = (void *)FUN_0010123f(*(undefined8 *)(param_2 + 8));
-      iVar1 = memcmp(__s1,&local_28,16);
-      if (iVar1 == 0) {
+    user_input_len = strlen(*(char **)(user_input + 8));
+    input_len = (int)user_input_len;
+    if (input_len == 16) {
+      encoded_pass_1 = 0xa9dab58698ccb89d;
+      encoded_pass_2 = 0xbbd949da83d394c9;
+      encoded_input = (void *)encode_input(*(undefined8 *)(user_input + 8));
+      win_condition = memcmp(encoded_input,&encoded_pass_1,16);
+      if (win_condition == 0) {
         puts("GG!");
-        uVar2 = 0;
+        uVar1 = 0;
       }
       else {
         puts("Dommage... Essaie encore!");
-        uVar2 = 1;
+        uVar1 = 1;
       }
     }
     else {
       puts(&DAT_00102028);
-      uVar2 = 1;
+      uVar1 = 1;
     }
   }
-  return uVar2;
+  return uVar1;
 }
 ```
 ```C
-void * FUN_0010123f(long param_1)
+void * encode_input(long input)
 {
   byte bVar1;
   byte bVar2;
@@ -118,7 +126,7 @@ void * FUN_0010123f(long param_1)
   
   pvVar3 = malloc(0x10);
   for (local_c = 0; local_c < 0x10; local_c = local_c + 1) {
-    bVar1 = *(byte *)(param_1 + local_c);
+    bVar1 = *(byte *)(input + local_c);
     bVar1 = bVar1 ^ (byte)((bVar1 >> 2 & 1) << 4) ^ (bVar1 >> 5) * '\x02' & 2;
     bVar1 = bVar1 ^ (byte)(((uint)bVar1 & (int)(uint)bVar1 >> 3 & 1U) << 7);
     bVar1 = bVar1 ^ (bVar1 >> 7 & (byte)((int)(uint)bVar1 >> 2) & 1) * '\x02';
@@ -139,49 +147,51 @@ void * FUN_0010123f(long param_1)
 }
 ```
 
-Our entry is passed as `param_2` to the `FUN_00101169` function. This function will check if the entry is indeed 16 characters long :
+The binary is stripped of any symbols, but I've modified some of the function and variable names to make this more understandable.
+
+As we can see in the code above, the `main` function starts by checking if our input (stored as `user_input`) is indeed 16 characters long :
 
 ```C
-    sVar3 = strlen(*(char **)(param_2 + 8));
-    local_c = (int)sVar3;
-    if (local_c == 16) {
+    user_input_len = strlen(*(char **)(user_input + 8));
+    input_len = (int)user_input_len;
+    if (input_len == 16) {
 ```
 
-If that's the case, it will pass it to the `FUN_0010123f` function. This function will encode `param_2` and return it. Finally, `FUN_00101169` will compare the encoded entry to `local_28` and `local_20` :
+If that's the case, it will pass it to the `encode_input` function. This function will encode our input, and return it as `encoded_input`. Finally, the encoded password stored under `encoded_pass_1` and `encoded_pass_2` will be compared to `encoded_input` :
 
 ```C
-      local_28 = 0xa9dab58698ccb89d;
-      local_20 = 0xbbd949da83d394c9;
-      __s1 = (void *)FUN_0010123f(*(undefined8 *)(param_2 + 8));
-      iVar1 = memcmp(__s1,&local_28,16);
+      encoded_pass_1 = 0xa9dab58698ccb89d;
+      encoded_pass_2 = 0xbbd949da83d394c9;
+      encoded_input = (void *)encode_input(*(undefined8 *)(user_input + 8));
+      win_condition = memcmp(encoded_input,&encoded_pass_1,16);
 ```
 
-A detail to understand in the previous snippet of code, is that the `memcmp` function is given a pointer towards `local_28`, but is being told that the string to compare is 16 bytes long. Since both `local_28` and `local_20` are 8 bytes long, and they're stored right next to each other on the stack (being declared one right after the other), `memcmp` will indeed compare our encoded input to both those variables.  
+A detail to understand in the previous snippet of code, is that the `memcmp` function is given a pointer towards `encoded_pass_1`, but is being told that the string to compare is 16 bytes long. Since both `encoded_pass_1` and `encoded_pass_2` are 8 bytes long, and they're stored right next to each other on the stack (being declared one right after the other), `memcmp` will indeed compare our encoded input to both these variables.  
  
 Next, the program will tell us if we gave the right password depending on the `memcmp` return value :
 
 ```C
-      if (iVar1 == 0) {
+      if (win_condition == 0) {
         puts("GG!");
-        uVar2 = 0;
+        uVar1 = 0;
       }
       else {
         puts("Dommage... Essaie encore!");
-        uVar2 = 1;
+        uVar1 = 1;
       }
 ```
 
-In other words, the password will be a 16 characters long input that once encoded by `FUN_0010123f` corresponds to `local_28` and `local_20`. From now on, we'll call `FUN_0010123f` the encoding function, and the two variables `local_28`, `local_20` the encoded password.  
+In other words, the password will be a 16 characters long input that once encoded by `encode_input` corresponds to `encoded_pass_1` and `encoded_pass_2`.  
   
-Let's analyse [this second crackme](./chall_example2/crackme.bin) to try and find differences between the two programs. Using Ghidra we find those two differences :
+Let's analyse [this second crackme](./chall_example2/crackme.bin) to try and find differences between the two programs. Using Ghidra, we can find :
 
 ```C
-      local_28 = 0x19182d3d0fd0973e;
-      local_20 = 0x30272025ded09705;
+      encoded_pass_1 = 0x19182d3d0fd0973e;
+      encoded_pass_2 = 0x30272025ded09705;
 ```
 
 ```C
-void * FUN_0010123f(long param_1)
+void * encode_input(long param_1)
 {
   byte bVar1;
   byte bVar2;
@@ -209,63 +219,15 @@ void * FUN_0010123f(long param_1)
 }
 ```
 
-As we can see, it seems that both the encoded password and encoding function are randomly generated for each crackme. There is either a pattern to be found to easily reverse the encoding function and find the password, or we'll need to brute force it.  
+As we can see, it seems that both the encoded password and encoding function are randomly generated for each crackme. But since we've identified both the encoded password, and the snippet of code encoding our password, we can simply bruteforce the crackme.
+
+To do so, we'll need to test every characters possible to find their encoded version and cross reference our results with the encoded password. We'll also need to script this procedure since this needs to be done in less than 20 seconds.
   
-Let's dynamically analyse [the first crackme](./chall_example1/crackme.bin) to find out which case scenario we're in.
+Let's try all this on [the first crackme](./chall_example1/crackme.bin) using GDB and Python.
 
 ## Dynamic analysis
 
-Using GDB let's have a deeper look into what `FUN_0010123f` returns. We'll add a breakpoint after the `memcmp` call to find our encoded entry in the register :
-
-```gdb
-gef➤  x/i 0x55555555520a
-=> 0x55555555520a:	call   0x555555555050 <memcmp@plt>
-
-gef➤  break *0x55555555520a
-Breakpoint 1 at 0x55555555520a
-
-gef➤  run $(python3 -c 'import sys; sys.stdout.buffer.write(b"A"*16)')
-```
-
-Once the breakpoint's reached :
-
-```gdb
-───────────────────────────────────────────────────────────────────── code:x86:64 ────
-   0x5555555551ff                  mov    edx, 0x10
-   0x555555555204                  mov    rsi, rax
-   0x555555555207                  mov    rdi, rcx
-●→ 0x55555555520a                  call   0x555555555050 <memcmp@plt>
-   ↳  0x555555555050 <memcmp@plt+0000> jmp    QWORD PTR [rip+0x2fba]        # 0x555555558010 <memcmp@got.plt>
-      0x555555555056 <memcmp@plt+0006> push   0x2
-      0x55555555505b <memcmp@plt+000b> jmp    0x555555555020
-      0x555555555060 <malloc@plt+0000> jmp    QWORD PTR [rip+0x2fb2]        # 0x555555558018 <malloc@got.plt>
-      0x555555555066 <malloc@plt+0006> push   0x3
-      0x55555555506b <malloc@plt+000b> jmp    0x555555555020
-───────────────────────────────────────────────────────────── arguments (guessed) ────
-memcmp@plt (
-   $rdi = 0x00005555555592a0 → 0xa8a8a8a8a8a8a8a8,
-   $rsi = 0x00007fffffffd8f0 → 0xa9dab58698ccb89d,
-   $rdx = 0x0000000000000010,
-   $rcx = 0x00005555555592a0 → 0xa8a8a8a8a8a8a8a8
-)
-```
-
-By analysing the `memcmp` call's arguments, we can deduce that `rdi` contains our encoded entry. Let's take a look at it :
-
-```gdb
-gef➤  x/2gx $rdi
-0x5555555592a0:	0xa8a8a8a8a8a8a8a8	0xa8a8a8a8a8a8a8a8
-```
-
-We can see that the `0x41` bytes (`A` in ascii) we injected got encoded to `0xa8`. If our encoded password contained a`0xa8`, we would have found one of the password's character.  
-  
-We can now repeat this process on different bytes to try and find a pattern, but sadly none seem to emerge : we'll have to brute force the algorithm by testing every byte one by one until we find the password.
-  
-Since the encoding function seems to be generated randomly, we'll need to script this procedure.
-
-## Exploit
-
-To do so, we'll use Python. We can execute any GDB command from a Python script, and get the output of that command as a string to parse. For example, here is a script retrieving the entry point of a program :
+We can execute any GDB command from a Python script, and get the output of that command as a string to parse. For example, here is a script retrieving the entry point of a program :
 
 ```python
 import gdb
@@ -287,17 +249,220 @@ Reading symbols from crackme.bin...
 This is the entry point :  0x1080
 ```
 
-[This script](./solver.py) solves the given `crackme.bin` by :
-- Retrieving the entry point of the program, from which the addresses where we'll need to add breakpoints to analyse memory will be calculated.
-- Retrieving the encoded password in memory.
-- Encoding bytes by passing them to the program as arguments, and retrieve them once encoded by inspecting memory during the `memcmp` call.
-- Comparing our encoded bytes to the encoded password to deduce the password.
-- Connecting to the server to send it both our token and password.
+Let's try, step by step, to test a few characters. We'll code a script  executing the same commands we do, and then put it all together to crack this binary.
 
-This script is also optimized enough to find the password in less than a few seconds.  
-To do so, instead of encoding one byte at a time like we did in the dynamic analysis, we encode 16 bytes at a time since the program takes an input of 16 bytes. Also, after craking a few passwords, we can notice that they almost always consist of alphanumerical characters : only working with those characters considerably reduces the number of bytes we have to encode.  
-  
-Finally let's run it :
+First, the binary being stripped, and PIE being activated, we'll need to calculate the address of the instructions we want to put breakpoints at, based on the entry point and offsets we'll determine. Let's start by retrieving the entry point :
+
+```gdb
+gef➤  info file
+Symbols from "/home/coucou/Documents/404CTF_WriteUps/Reversible_Engineering_1/chall_example1/crackme.bin".
+Local exec file:
+	`/home/coucou/Documents/404CTF_WriteUps/Reversible_Engineering_1/chall_example1/crackme.bin', 
+        file type elf64-x86-64.
+	Entry point: 0x1080
+[...]
+
+gef➤  run
+Starting program: /home/coucou/Documents/404CTF_WriteUps/Reversible_Engineering_1/chall_example1/crackme.bin 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+J'ai besoin d'un argument!
+[Inferior 1 (process 49546) exited with code 01]
+
+gef➤  info file
+Symbols from "/home/coucou/Documents/404CTF_WriteUps/Reversible_Engineering_1/chall_example1/crackme.bin".
+Local exec file:
+	`/home/coucou/Documents/404CTF_WriteUps/Reversible_Engineering_1/chall_example1/crackme.bin', 
+        file type elf64-x86-64.
+	Entry point: 0x555555555080
+[...]
+```
+
+Once we've runned the program once, the addresses won't be modified inside GDB anymore.
+
+We've already coded this first part earlier to show how Python works with GDB, so let's directly jump to the next step : extracting the encoded password. Those should be in memory when they're being defined in the `main` function :
+
+```C
+encoded_pass_1 = 0xa9dab58698ccb89d;
+encoded_pass_2 = 0xbbd949da83d394c9;
+```
+
+Let's try and find those instructions in GDB :
+
+```gdb
+───────────────────────────────────────────────────────────────────────────────────────────────────── code:x86:64 ────
+   0x5555555551c7                  jmp    0x55555555523d
+   0x5555555551c9                  movabs rax, 0xa9dab58698ccb89d
+   0x5555555551d3                  movabs rdx, 0xbbd949da83d394c9
+ → 0x5555555551dd                  mov    QWORD PTR [rbp-0x20], rax
+   0x5555555551e1                  mov    QWORD PTR [rbp-0x18], rdx
+   0x5555555551e5                  mov    rax, QWORD PTR [rbp-0x30]
+   0x5555555551e9                  add    rax, 0x8
+   0x5555555551ed                  mov    rax, QWORD PTR [rax]
+   0x5555555551f0                  mov    rdi, rax
+```
+```gdb
+gef➤  print $rax
+$1 = 0xa9dab58698ccb89d
+
+gef➤  print $rdx
+$3 = 0xbbd949da83d394c9
+```
+
+We can see that the encoded password is stored in the register. Now let's calculate the offset between this instruction and the entry point :
+
+```python3
+>>> 0x5555555551dd - 0x555555555080
+349
+```
+
+Using all of this, we can code this script extracting the encoded password :
+
+```python
+import gdb
+
+ENCODED_PASS_OFFSET = 349 
+
+def gdb_exec(command: str) -> str:
+    return gdb.execute(command, from_tty=False, to_string=True)
+
+def find_entry() -> str:
+    info = gdb_exec("info file")
+    for i in info.split("\n"):
+        if "Entry point:" in i:
+            return i.split(" ")[2]
+    return ""
+
+def find_encoded_pass(entry_addr: str) -> [hex]:
+    pass_addr = hex(int(entry_addr, 16)+ENCODED_PASS_OFFSET)
+    gdb_exec(f"break *{pass_addr}")
+    gdb_exec("run "+"A"*16)
+    full_pass = [ "_" for i in range(16) ]
+    
+    enc_pass = gdb_exec("print $rax")
+    enc_pass = enc_pass.split(" ")[2][2:18]
+    for i in range(int(len(enc_pass)/2)):
+        full_pass[7-i] = hex(int(enc_pass[(i*2):(i*2)+2], 16))
+
+    enc_pass = gdb_exec("print $rdx")
+    enc_pass = enc_pass.split(" ")[2][2:18]
+    for i in range(int(len(enc_pass)/2)):
+         full_pass[15-i] = hex(int(enc_pass[(i*2):(i*2)+2], 16))
+
+    gdb_exec("delete breakpoints")
+    return full_pass
+
+if __name__ == "__main__":
+    gdb_exec("file crackme.bin")
+    gdb_exec("run")
+    entry_addr = find_entry()
+    enc_pass = find_encoded_pass(entry_addr)
+
+    print(enc_pass)
+```
+
+```console
+$ gdb -q -x test.py
+GEF for linux ready, type `gef' to start, `gef config' to configure
+88 commands loaded and 5 functions added for GDB 13.2 in 0.00ms using Python engine 3.11
+GEF for linux ready, type `gef' to start, `gef config' to configure
+88 commands loaded and 5 functions added for GDB 13.2 in 0.00ms using Python engine 3.11
+J'ai besoin d'un argument!
+[Inferior 1 (process 50339) exited with code 01]
+
+Breakpoint 1, 0x00005555555551dd in ?? ()
+
+['0x9d', '0xb8', '0xcc', '0x98', '0x86', '0xb5', '0xda', '0xa9', '0xc9', '0x94', '0xd3', '0x83', '0xda', '0x49', '0xd9', '0xbb']
+```
+
+Now, we'll need to input characters, and extract their encoded versions. The encoded input should be in memory during the `memcmp` call :
+
+```C
+win_condition = memcmp(encoded_input,&encoded_pass_1,16);
+```
+
+Let's try and find this instruction in GDB :
+
+```gdb
+gef➤  r $(python3 -c 'import sys; sys.stdout.buffer.write(b"ABCDEFGHIJQLMNOP")')
+```
+
+```gdb
+───────────────────────────────────────────────────────────────────────────────────────────────────── code:x86:64 ────
+   0x5555555551ff                  mov    edx, 0x10
+   0x555555555204                  mov    rsi, rax
+   0x555555555207                  mov    rdi, rcx
+●→ 0x55555555520a                  call   0x555555555050 <memcmp@plt>
+   ↳  0x555555555050 <memcmp@plt+0000> jmp    QWORD PTR [rip+0x2fba]        # 0x555555558010 <memcmp@got.plt>
+      0x555555555056 <memcmp@plt+0006> push   0x2
+      0x55555555505b <memcmp@plt+000b> jmp    0x555555555020
+      0x555555555060 <malloc@plt+0000> jmp    QWORD PTR [rip+0x2fb2]        # 0x555555558018 <malloc@got.plt>
+      0x555555555066 <malloc@plt+0006> push   0x3
+      0x55555555506b <malloc@plt+000b> jmp    0x555555555020
+───────────────────────────────────────────────────────────────────────────────────────────── arguments (guessed) ────
+memcmp@plt (
+   $rdi = 0x00005555555592a0 → 0xa5b3bab8bdafa2a8,
+   $rsi = 0x00007fffffffd960 → 0xa9dab58698ccb89d,
+   $rdx = 0x0000000000000010,
+   $rcx = 0x00005555555592a0 → 0xa5b3bab8bdafa2a8
+)
+```
+
+```gdb
+gef➤  x/2gx $rdi
+0x5555555592a0:	0xa5b3bab8bdafa2a8	0xb933b638b1bcaa2f
+```
+
+Our encoded password seems to be stored inside the `rdi`. Since we are working on a little endian system, we deduce that the character `A` is being encoded to `0xa8`, `B` to `0xa2`, etc. Let's calculate the offset between this instruction and the entry point :
+
+```python
+>>> 0x55555555520a - 0x555555555080
+394
+```
+
+Using all of this, we can code this script inputing 16 characters and extracting their encoded version :
+
+```python
+$ gdb -q -x test.py
+GEF for linux ready, type `gef' to start, `gef config' to configure
+88 commands loaded and 5 functions added for GDB 13.2 in 0.00ms using Python engine 3.11
+GEF for linux ready, type `gef' to start, `gef config' to configure
+88 commands loaded and 5 functions added for GDB 13.2 in 0.00ms using Python engine 3.11
+J'ai besoin d'un argument!
+[Inferior 1 (process 51348) exited with code 01]
+
+Breakpoint 1, 0x00005555555551dd in ?? ()
+
+Breakpoint 2, 0x000055555555520a in ?? ()
+
+['0xa8', '0xa2', '0xaf', '0xbd', '0xb8', '0xba', '0xb3', '0xa5', '0x2f', '0xaa', '0xbc', '0xb1', '0x38', '0xb6', '0x33', '0xb9']
+```
+
+Those values match the one we got earlier : our script is indeed working ! Let's add the final touch to it, and crack those binaries.
+
+## Exploit
+
+To finish our script, we'll need to repeat the operation we did previously, checking new characters every time, and comparing their encoded version to the encoded password to find the solution. This function should do the trick :
+
+```python
+CHARACTERS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+
+def find_pass(enc_pass: [hex]) -> str:
+    password = [ "_" for i in range(16) ]
+    for i in range(4):
+        charac = CHARACTERS[i*16:16+i*16]
+        if i == 3:
+            charac.append("A")
+            charac.append("A")
+        encoded = encode(charac)
+        for k in range(16):
+            for j in range(16):
+                if enc_pass[k] == encoded[j]:
+                    password[k] = charac[j]
+    return "".join(password)
+```
+
+[This script](./solver.py) puts it all together, and also connects back the server to send the solution :
 
 ```console
 $ nc challenges.404ctf.fr 31998 > chall.zip && unzip chall.zip && chmod +x crackme.bin && gdb -q -x solver.py
