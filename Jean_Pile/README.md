@@ -154,7 +154,7 @@ gef➤  r <<< $(python3 -c 'import sys; sys.stdout.buffer.write(b"A"*40)')
      0x400a51 <service+011b>   jmp    0x400a6f <service+313>
 ```
 
-The rbp is stored right after our input on the stack : we'll need an offset of 48 to reach it.  
+The rbp is stored right after our input on the stack : we'll need an offset of 48 bytes to reach it.  
   
 Now, to leak the GOT table, we'll need to pass arguments to the `puts` function. Let's see what register is used to do so :
 
