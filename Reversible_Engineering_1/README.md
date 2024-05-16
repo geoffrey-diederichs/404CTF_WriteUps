@@ -259,7 +259,8 @@ Symbols from "/home/coucou/Documents/404CTF_WriteUps/Reversible_Engineering_1/ch
 Local exec file:
 	`/home/coucou/Documents/404CTF_WriteUps/Reversible_Engineering_1/chall_example1/crackme.bin', 
         file type elf64-x86-64.
-	Entry point: 0x1080`
+	Entry point: 0x1080'
+[...]
 
 gef➤  run
 Starting program: /home/coucou/Documents/404CTF_WriteUps/Reversible_Engineering_1/chall_example1/crackme.bin 
@@ -273,7 +274,8 @@ Symbols from "/home/coucou/Documents/404CTF_WriteUps/Reversible_Engineering_1/ch
 Local exec file:
 	`/home/coucou/Documents/404CTF_WriteUps/Reversible_Engineering_1/chall_example1/crackme.bin', 
         file type elf64-x86-64.
-	Entry point: 0x555555555080`
+	Entry point: 0x555555555080'
+[...]
 ```
 
 Once we've ran the program once, the addresses won't be modified inside GDB anymore.
