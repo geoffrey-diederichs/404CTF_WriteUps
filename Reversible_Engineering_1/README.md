@@ -413,7 +413,7 @@ gef➤  x/2gx $rdi
 0x5555555592a0:	0xa5b3bab8bdafa2a8	0xb933b638b1bcaa2f
 ```
 
-Our encoded password seems to be stored inside `rdi`. Since we are working on a little endian system, we can deduce that the character `A` is being encoded to `0xa8`, `B` to `0xa2`, etc. Let's calculate the offset between this instruction and the entry point :
+Our encoded password seems to be stored inside `rdi`. Since we are working on a little endian system, we can deduce that the character `A` is being encoded to `0xa8`, `B` to `0xa2`, etc. Let's calculate the offset between this instruction and the entry point using Python :
 
 ```python
 >>> 0x55555555520a - 0x555555555080
