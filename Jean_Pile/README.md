@@ -183,7 +183,7 @@ $ ROPgadget --binary jean_pile | grep rdi
 0x0000000000400b83 : pop rdi ; ret
 ```
 
-Finally, we'll need to leak several addresses of the GOT to get a better idea of which libc we are working with. 
+Finally, we'll need to leak several addresses of the GOT to get a better idea of which libc we are working with.  
 Let's find two more GOT entries :
 
 ```gdb
