@@ -206,7 +206,7 @@ If successful, we enter a while loop in which we download the password to crack,
     connection_success_2 = download_password_message(password,message);
 ```
 
-If successful, it will call the `get_input`function that will print out the downloaded message before taking an input of 32 bytes :
+If successful, it will call the `get_input` function that will print out the downloaded message before taking an input of 32 bytes :
 
 ```C
   printf("%s",message);
