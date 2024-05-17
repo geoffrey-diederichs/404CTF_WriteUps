@@ -50,7 +50,7 @@ $ ./crackme.bin
 
 ```
 
-The program is asking us a for a key, it just seems to freeze without doing anything when we execute the program a second time. Just as mentionned in the description above, we probably can only run it once.
+The program is asking us a for a key, it just seems to freeze without doing anything when we execute the program a second time. As mentionned in the description above, we probably can only run it once.
 
 Let's try and send a solution :
 
