@@ -69,7 +69,7 @@ Nope...
 
 Just like before, the token is used by the server to identify the crackme we're working with.
 
-You can access these two examples of binaries sent by the server : [binary 1](./chall_example1), [binary 2](./chall_example2).
+You can access these two examples of binaries sent by the server : [binary 1](./chall_example1/crackme.bin), [binary 2](./chall_example2/crackme.bin).
 
 Let's analyze [this binary](./chall_example1/crackme.bin) to try and understand what's going on.
 
