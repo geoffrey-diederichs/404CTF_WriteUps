@@ -31,23 +31,6 @@ $ ./crackme.bin
 
 The program is asking us a for a key, and it just seems to freeze without doing anything when we execute the program a second time. As mentionned in the description above, we probably can only run it once.
 
-Let's try and send a solution :
-
-```console
-$ nc challenges.404ctf.fr 31990 > chall.zip && unzip chall.zip && cat token.txt && printf '\n' && nc challenges.404ctf.fr 31991
-Archive:  chall.zip
- extracting: crackme.bin             
- extracting: token.txt               
-a72c209b11684c41a475a31b1c4e421b
-Token ? 
-a72c209b11684c41a475a31b1c4e421b
-Alors, la solution ? 
-test
-Nope...
-```
-
-Just like before, the token is used by the server to identify the crackme we're working with.
-
 Let's analyze [this binary](./chall_example1/crackme.bin) to try and understand what's going on.
 
 ## Static analysis
