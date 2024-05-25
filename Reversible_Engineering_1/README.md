@@ -16,35 +16,11 @@ nc challenges.404ctf.fr 31999
 Author: @Izipak (_hdrien)
 ```
 
-Let's try to download one of those archives :
+You can access these two examples of archives sent by the server : [archive 1](./chall_example1), [archive 2](./chall_example2). 
+
+Let's test one of those binaries :
 
 ```console
-$ nc challenges.404ctf.fr 31998 > chall.zip && unzip chall.zip && ls -l                                      
-Archive:  chall.zip
- extracting: crackme.bin             
- extracting: token.txt               
-total 36
--rw-r--r-- 1 coucou coucou 14742 Apr 24 10:13 chall.zip
--rw------- 1 coucou coucou 14496 Apr 24 08:13 crackme.bin
--rw------- 1 coucou coucou    32 Apr 24 08:13 token.txt
-
-$ cat token.txt 
-393aaf57eb0b625ab20cfa65327101f0
-
-$ file crackme.bin
-crackme.bin: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=68dd82947dbeb975ddc70502cb740514ff8716a2, for GNU/Linux 3.2.0, stripped
-
-$ checksec crackme.bin 
-[*] '/404CTF_WriteUps/Reversible_Engineering_1/chall_example1/crackme.bin'
-    Arch:     amd64-64-little
-    RELRO:    Partial RELRO
-    Stack:    No canary found
-    NX:       NX enabled
-    PIE:      PIE enabled
-
-$ chmod +x crackme.bin && ./crackme.bin 
-J'ai besoin d'un argument!
-
 $ ./crackme.bin A               
 L'argument doit comporter 16 caractères.
 
@@ -68,9 +44,7 @@ test
 Nope...
 ```
 
-The token only seem to be used by the server to identify which crackme we have.
-
-You can access these two examples of archives sent by the server : [archive 1](./chall_example1), [archive 2](./chall_example2).  
+The token only seems to be used by the server to identify which crackme we've got. 
   
 Let's analyse [the first crackme](./chall_example1/crackme.bin).
 
