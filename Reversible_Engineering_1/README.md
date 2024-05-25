@@ -67,7 +67,9 @@ Alors, la solution ?
 test
 Nope...
 ```
-  
+
+The token only seem to be used by the server to identify which crackme we have.
+
 You can access these two examples of archives sent by the server : [archive 1](./chall_example1), [archive 2](./chall_example2).  
   
 Let's analyse [the first crackme](./chall_example1/crackme.bin).
