@@ -10,4 +10,4 @@ Bypassing ASLR using a ret2libc.
 
 ## [Revers(ibl)e Engineering [1/2]](./Reversible_Engineering_1)
 
-Scripting GDB using Python to brute force a randomly generated encoding algorithm in less than 20 seconds.
+Scripting GDB using Python to brute force a randomly generated encoding algorithm in a few seconds.
