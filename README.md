@@ -1,5 +1,7 @@
 # [404 CTF](https://404ctf.fr)
 
+Not finished yet !
+
 Write-ups from some of the most interesting challenges I've solve during 2024's edition of the 404 CTF.
 
 ## [Jean Pile](./Jean_Pile)
