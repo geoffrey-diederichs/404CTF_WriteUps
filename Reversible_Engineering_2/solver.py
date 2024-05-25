@@ -97,23 +97,3 @@ if __name__ == "__main__":
     key3 = solve_one_key()
 
     print(key1, key2, key3)
-    
-    """
-
-    gdb_exec("checkpoint")
-    key1, ite = crack_key(1)
-    gdb_exec("restart 0")
-    gdb_exec("delete checkpoint "+str(ite-1))
-    gdb_exec("delete checkpoint "+str(ite))
-    gdb_exec("continue")
-    gdb_exec("continue")
-    
-    gdb_exec("checkpoint")
-    key2, ite = crack_key(1)
-    gdb_("restart 0")
-
-
-    print(key1, key2)
-
-    gdb_exec("continue")
-    """

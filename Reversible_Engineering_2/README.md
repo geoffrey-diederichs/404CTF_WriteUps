@@ -15,33 +15,12 @@ nc challenges.404ctf.fr 31991
 Author : @Izipak (_hdrien)
 ```
 
-Let's try and download one of those binaries :
+You can access these two examples of binaries sent by the server : [binary 1](./chall_example1/crackme.bin), [binary 2](./chall_example2/crackme.bin).
+
+Let's try and run one of these binaries :
 
 ```console
-$ nc challenges.404ctf.fr 31990 > chall.zip && unzip chall.zip && ls -l
-Archive:  chall.zip
- extracting: crackme.bin             
- extracting: token.txt               
-total 36
--rw-r--r-- 1 coucou coucou 14862 May 17 09:29 chall.zip
--rw------- 1 coucou coucou 14616 May 17 07:29 crackme.bin
--rw------- 1 coucou coucou    32 May 17 07:29 token.txt
-
-$ cat token.txt 
-b5b880bd135efad4a36d3e5db34f10e3
-
-$ file crackme.bin 
-crackme.bin: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=faad12dca58aa53914403c680e20203b17f393c9, for GNU/Linux 3.2.0, stripped
-
-$ checksec crackme.bin  
-[*] '/home/coucou/Documents/404CTF_WriteUps/Reversible_Engineering_2/chall_example1/crackme.bin'
-    Arch:     amd64-64-little
-    RELRO:    Partial RELRO
-    Stack:    No canary found
-    NX:       NX enabled
-    PIE:      PIE enabled
-
-$ chmod +x crackme.bin && ./crackme.bin
+$ ./crackme.bin
 Veuillez fournir votre clé de vérification.
 Clé : AAAAA
 Mauvaise clé, dommage..
@@ -50,7 +29,7 @@ $ ./crackme.bin
 
 ```
 
-The program is asking us a for a key, it just seems to freeze without doing anything when we execute the program a second time. As mentionned in the description above, we probably can only run it once.
+The program is asking us a for a key, and it just seems to freeze without doing anything when we execute the program a second time. As mentionned in the description above, we probably can only run it once.
 
 Let's try and send a solution :
 
@@ -68,8 +47,6 @@ Nope...
 ```
 
 Just like before, the token is used by the server to identify the crackme we're working with.
-
-You can access these two examples of binaries sent by the server : [binary 1](./chall_example1/crackme.bin), [binary 2](./chall_example2/crackme.bin).
 
 Let's analyze [this binary](./chall_example1/crackme.bin) to try and understand what's going on.
 
@@ -239,20 +216,17 @@ By analyzing [the other binary](./chall_example2/crackme.bin), we can see that j
 
 To crack the password, we'll need to input characters, and extract their encoded version to cross check them with the encoded password. This challenge is pretty similar to [the previous one](../Reversible_Engineering_1/), but in this case we can't run it over and over again trying out different passwords each time since the servers will only give us the required data once. We'll need to take a snapshot of the program after it received everything from the server, and come back to it once the input has been processed. To do so, we'll use [checkpoints](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Checkpoint_002fRestart.html) in GDB.
 
-## Dynamic analysis
-
-Since this time we're given 10 minutes we could possible solve it manually. But it will be way easier to use a script. Please refer to [the previous write-up](../Reversible_Engineering_1/) if you want more details about scripting GDB with Python. We will proceed the same way : by trying to solve the challenge manually step by step and then coding a script executing the same commands we used.
-
-
+We'll need to put a checkpoint when the input is given, send our characters to be encoded, then extract their encoded versions during the `memcmp` call and cross reference them with the `encoded_password`.
 
 ## Exploit
 
+For this write up, we won't be able to go into as much details [as the previous one](../Reversible_Engineering_1/) since the servers are down. But you can still find [this script](./solver.py) solving the binaries :
+
 ```md
-┌──(root㉿3abf02efa5fa)-[/home/trsh]
-└─# cat token.txt 
+$ cat token.txt 
 b59db5ce88ebee1563521008f7896836
-┌──(root㉿3abf02efa5fa)-[/home/trsh]
-└─# nc challenges.404ctf.fr 31991
+
+$ nc challenges.404ctf.fr 31991
 Token ? 
 b59db5ce88ebee1563521008f7896836
 Alors, la solution ? 
@@ -260,3 +234,5 @@ MLpocSzoM65ZqEbc9jey96L3SgMpEKVa8LuhzMEEXdhUDcCx
 GG. Voila ton flag!
 404CTF{4df8110da3b4c5c1e87e564418fab97f}
 ```
+
+The key differences between this script and the previous one being the use of checkpoints, that there are three keys to solve (after you've solved a key the servers sends you a new one), and that the inputs are given manually so the script has to also extract the `user_input` to determine what the encoded bytes correspond to.
