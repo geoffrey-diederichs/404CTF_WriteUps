@@ -211,7 +211,7 @@ fgets : 0x7f256ab5a040
 [*] Closed connection to challenges.404ctf.fr port 31957
 ```
 
-We can now use a libc database such as [this once](https://libc.rip/) to find the offsets we need :
+We can now use a libc database such as [this one](https://libc.rip/) to find the offsets we need :
 
 ```md
 puts	0x77980
@@ -219,7 +219,7 @@ system	0x4c490
 str_bin_sh	0x196031
 ```
 
-`str_bin_sh` being the string `/bin/sh` we'll need to pass it to `system` as parameter to open a shell. Using those three values, we can now calculate the addresses we need to pwn this program.
+`str_bin_sh` being the string `/bin/sh` we'll need to pass it to `system` as parameter to open a shell. Using these three values, we can now calculate the addresses we need to pwn this program.
 
 ## Exploit
 
